@@ -3,149 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> ڕاستنڤيسا بەهدینی</title>
-    <script src="typo.js"></script>
+    <title>ڕاستنڤيسا به‌هدينى (به‌هدينى)</title>
+    <script src="https://cdn.jsdelivr.net/npm/typo-js@1.2.4/typo.js"></script>
     <style>
-        :root { --primary-color: #2c3e50; --accent-color: #27ae60; --error-color: #e74c3c; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f8f9fa; margin: 0; padding: 20px; color: var(--primary-color); }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h1 { text-align: center; font-size: 24px; margin-bottom: 20px; }
-        .toolbar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-fix { background: var(--accent-color); color: white; }
-        .btn-copy { background: #3498db; color: white; }
-        .btn-clear { background: #95a5a6; color: white; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        textarea { width: 100%; height: 250px; padding: 15px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; outline: none; }
-        textarea:focus { border-color: #3498db; }
-        #result { margin-top: 20px; padding: 20px; background: #fff; border: 1px solid #eee; border-radius: 8px; line-height: 2; font-size: 19px; min-height: 100px; }
-        .error { color: var(--error-color); text-decoration: underline wavy; cursor: help; }
-        .stats { margin-top: 10px; font-size: 14px; color: #555; display: flex; gap: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .under-test { text-align: center; font-size: 12px; color: #7f8c8d; margin-top: 25px; font-style: italic; }
-        footer { margin-top: 15px; text-align: center; font-size: 13px; color: #34495e; border-top: 1px solid #eee; padding-top: 10px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #editor {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+            box-sizing: border-box;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 18px;
+            background: #fafafa;
+        }
+        .misspelled {
+            color: red;
+            text-decoration: underline wavy red;
+            cursor: help;
+            position: relative;
+        }
+        .misspelled:hover::after {
+            content: attr(data-suggestions);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        .status {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            direction: rtl;
+        }
+        .loading { background: #fff3cd; color: #856404; }
+        .ready { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h1>ڕاستنڤيسا بەهدینی</h1>
-    
-    <div class="stats">
-        <span>کۆما پەیڤان: <strong id="wordCount">0</strong></span>
-        <span>شاشیێن دیتى: <strong id="errorCount" style="color:red;">0</strong></span>
+    <div class="container">
+        <h1>ڕاستنڤيسا كوردى (به‌هدينى)</h1>
+        <div id="status" class="status loading">فه‌رهه‌نگ يا دهێته‌ باركرن...</div>
+        <textarea id="editor" placeholder="ل ئه‌ڤێرێ بنڤيسه‌..."></textarea>
+        <div id="output"></div>
     </div>
 
-    <textarea id="inputText" placeholder="دەقێ خۆ ل ڤێرە کۆپی بکە (تو دشێ دەقێن درێژ ژی دابنی)..."></textarea>
-    
-    <div class="toolbar">
-        <button class="btn-fix" onclick="autoFixAll()">ڕاستڤەکرنا هەمییان</button>
-        <button class="btn-copy" onclick="copyText()">کۆپیکرنا دەقی</button>
-        <button class="btn-clear" onclick="clearAll()">پاقژکرن</button>
-    </div>
+    <script>
+        let dictionary;
+        const editor = document.getElementById('editor');
+        const output = document.getElementById('output');
+        const status = document.getElementById('status');
 
-    <div id="result"></div>
+        async function init() {
+            try {
+                // Typo-js expects the dictionary name and paths to .aff and .dic
+                // We'll load them manually and pass to Typo
+                const affResponse = await fetch('kurdish-BAD.aff');
+                const dicResponse = await fetch('kurdish-BAD.dic');
+                
+                if (!affResponse.ok || !dicResponse.ok) {
+                    throw new Error('نه‌شيا فاييلان باربكه‌ت.');
+                }
 
-    <div class="under-test">(ئەڤ ڕاستنڤیسە، ل ژێر تێستێيه‌)</div>
+                const affData = await affResponse.text();
+                const dicData = await dicResponse.text();
 
-    <footer>
-        پڕۆژەیێ نیشتمانی یێ گەشەپێدانا ڕێنڤیسا بەهدینی
-    </footer>
-</div>
-
-<script>
-    var dictionary = new Typo("behdini", null, null, {
-        dictionaryPath: ".", 
-        asyncLoad: true
-    });
-
-    const input = document.getElementById('inputText');
-    const result = document.getElementById('result');
-    const wordCountDisplay = document.getElementById('wordCount');
-    const errorCountDisplay = document.getElementById('errorCount');
-
-    // پشکنینا دەقی
-    input.addEventListener('input', runChecker);
-
-    function runChecker() {
-        const text = input.value;
-        if (!text.trim()) {
-            result.innerHTML = "";
-            wordCountDisplay.innerText = "0";
-            errorCountDisplay.innerText = "0";
-            return;
+                dictionary = new Typo("kurdish", affData, dicData);
+                
+                status.textContent = 'فه‌رهه‌نگ يا به‌رهه‌ڤه‌، ده‌ست ب نڤێسينێ بكه‌.';
+                status.className = 'status ready';
+                
+                editor.addEventListener('input', checkSpelling);
+                // Initial check if there's content
+                if (editor.value) checkSpelling();
+            } catch (err) {
+                console.error(err);
+                status.textContent = 'شاشييه‌ك چێبوو: ' + err.message;
+                status.className = 'status error';
+            }
         }
 
-        const words = text.split(/(\s+)/);
-        let outputHTML = "";
-        let errorCount = 0;
-        let pureWordCount = 0;
-
-        words.forEach(word => {
-            if (/\s+/.test(word)) {
-                outputHTML += word;
-                return;
-            }
+        function checkSpelling() {
+            const text = editor.value;
+            // Tokenize text while preserving separators
+            const parts = text.split(/(\s+|[،.؟!؛:()\[\]{}""'«»])/);
             
-            pureWordCount++;
-            let cleanWord = word.replace(/[.,!؟،:;()]/g, "");
-            
-            if (cleanWord && !dictionary.check(cleanWord)) {
-                outputHTML += `<span class="error">${word}</span>`;
-                errorCount++;
-            } else {
-                outputHTML += word;
-            }
-        });
-
-        result.innerHTML = outputHTML.replace(/\n/g, '<br>');
-        wordCountDisplay.innerText = pureWordCount;
-        errorCountDisplay.innerText = errorCount;
-    }
-
-    // ڕاستڤەکرنا هەمییان ب شێوەیەکێ ئۆتۆماتیکی
-    function autoFixAll() {
-        if (!dictionary) return;
-        
-        const text = input.value;
-        const words = text.split(/(\s+)/);
-        let fixedText = "";
-
-        words.forEach(word => {
-            if (/\s+/.test(word)) {
-                fixedText += word;
-                return;
-            }
-
-            let cleanWord = word.replace(/[.,!؟،:;()]/g, "");
-            if (cleanWord && !dictionary.check(cleanWord)) {
-                let suggestions = dictionary.suggest(cleanWord);
-                if (suggestions.length > 0) {
-                    // گوهۆڕینا پەیڤا شاش ب پێشنیارا ئێکێ
-                    fixedText += word.replace(cleanWord, suggestions[0]);
-                } else {
-                    fixedText += word;
+            const html = parts.map(part => {
+                if (!part || /^\s+$/.test(part) || /^[،.؟!؛:()\[\]{}""'«»]$/.test(part)) {
+                    return part;
                 }
-            } else {
-                fixedText += word;
-            }
-        });
+                
+                // Clean word from any inner punctuation if necessary
+                const cleanWord = part.trim();
+                if (!cleanWord) return part;
 
-        input.value = fixedText;
-        runChecker();
-        alert("هەمی پەیڤێن شاش ب پێشنیارێن نێزیک هاتنە گوهۆڕین.");
-    }
+                const isCorrect = dictionary.check(cleanWord);
+                if (isCorrect) {
+                    return part;
+                } else {
+                    const suggestions = dictionary.suggest(cleanWord).slice(0, 5).join(', ');
+                    return `<span class="misspelled" data-suggestions="پێشنیارەکان: ${suggestions || 'نينه‌'}">${part}</span>`;
+                }
+            }).join('');
 
-    function copyText() {
-        input.select();
-        document.execCommand("copy");
-        alert("دەق هاتە کۆپیکرن!");
-    }
+            output.innerHTML = html;
+        }
 
-    function clearAll() {
-        input.value = "";
-        runChecker();
-    }
-</script>
-
+        init();
+    </script>
 </body>
 </html>
