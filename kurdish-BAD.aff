@@ -1,0 +1,66 @@
+SET UTF-8
+
+PFX 1 Y 2
+PFX 1 0 ڤه‌ .
+PFX 1 0 ڤە .
+
+PFX 2 Y 1
+PFX 2 0 دا .
+
+PFX 3 Y 2
+PFX 3 0 هل .
+PFX 3 0 هەل .
+
+PFX 4 Y 1
+PFX 4 0 ڕا .
+
+PFX 5 Y 1
+PFX 5 0 لێ .
+
+PFX 6 Y 1
+PFX 6 0 تێک .
+
+PFX 7 Y 1
+PFX 7 0 پێ .
+
+PFX 8 Y 1
+PFX 8 0 پێک .
+
+PFX 9 Y 1
+PFX 9 0 لێک .
+
+PFX 10 Y 1
+PFX 10 0 ژێ .
+
+PFX 11 Y 1
+PFX 11 0 وەر .
+
+PFX 12 Y 1
+PFX 12 0 پێڕا .
+
+PFX 13 Y 1
+PFX 13 0 تێ .
+
+PFX 14 Y 1
+PFX 14 0 ڕوو .
+
+PFX 15 Y 1
+PFX 15 0 تێڕا .
+
+PFX 16 Y 1
+PFX 16 0 پێدا .
+
+PFX 17 Y 1
+PFX 17 0 ڤێ .
+
+PFX 18 Y 1
+PFX 18 0 پێوەر .
+
+PFX 19 Y 1
+PFX 19 0 هن .
+
+PFX 20 Y 1
+PFX 20 0 ڤێڕا .
+
+PFX 21 Y 1
+PFX 21 0 پێڤە .
